@@ -408,7 +408,7 @@ def main(config_path):
                     y_rec = model.decoder(en, F0_real, real_norm, s)
                     
                     writer.add_audio('eval/y' + str(bib), y_rec.cpu().numpy().squeeze(), epoch, sample_rate=sr)
-                    if epoch == 0:
+                    if epoch == start_epoch:
                         writer.add_audio('gt/y' + str(bib), waves[bib].squeeze(), epoch, sample_rate=sr)
                     
                     if bib >= 6:
