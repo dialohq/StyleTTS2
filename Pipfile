@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+soundfile = "*"
+torchaudio = "*"
+munch = "*"
+torch = "*"
+pydub = "*"
+pyyaml = "*"
+librosa = "*"
+nltk = "*"
+matplotlib = "*"
+accelerate = "*"
+transformers = "*"
+einops = "*"
+einops-exts = "*"
+tqdm = "*"
+typing = "*"
+typing-extensions = "*"
+monotonic-align = {git = "git+https://github.com/resemble-ai/monotonic_align.git"}
+phonemizer = "*"
+tensorboard = "*"
+ipython = "*"
+ipykernel = "*"
+pandas = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
