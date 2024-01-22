@@ -768,7 +768,7 @@ def main(config_path):
                     if bib >= 5:
                         break
                             
-        if epoch % saving_epoch == 0:
+        if (epoch + 1) % saving_epoch == 0:
             if (loss_test / iters_test) < best_loss:
                 best_loss = loss_test / iters_test
             print('Saving..')
@@ -788,6 +788,17 @@ def main(config_path):
                 
                 with open(osp.join(log_dir, osp.basename(config_path)), 'w') as outfile:
                     yaml.dump(config, outfile, default_flow_style=True)
-        
+
+    print('Saving..')
+    state = {
+        'net':  {key: model[key].state_dict() for key in model}, 
+        'optimizer': optimizer.state_dict(),
+        'iters': iters,
+        'val_loss': loss_test / iters_test,
+        'epoch': epoch,
+    }
+    save_path = osp.join(log_dir, config.get('second_stage_path', 'second_stage.pth'))
+    torch.save(state, save_path)
+
 if __name__=="__main__":
     main()

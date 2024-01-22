@@ -414,7 +414,7 @@ def main(config_path):
                     if bib >= 6:
                         break
 
-            if epoch % saving_epoch == 0:
+            if (epoch + 1) % saving_epoch == 0:
                 if (loss_test / iters_test) < best_loss:
                     best_loss = loss_test / iters_test
                 print('Saving..')
