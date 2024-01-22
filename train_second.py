@@ -64,7 +64,7 @@ def main(config_path):
     file_handler.setFormatter(logging.Formatter('%(levelname)s:%(asctime)s: %(message)s'))
     logger.addHandler(file_handler)
 
-    
+    data_parallel = config.get('data_parallel', True)
     batch_size = config.get('batch_size_2nd', 10)
 
     epochs = config.get('epochs_2nd', 200)
@@ -130,9 +130,10 @@ def main(config_path):
     _ = [model[key].to(device) for key in model]
     
     # DP
-    for key in model:
-        if key != "mpd" and key != "msd" and key != "wd":
-            model[key] = MyDataParallel(model[key])
+    if data_parallel:
+        for key in model:
+            if key != "mpd" and key != "msd" and key != "wd":
+                model[key] = MyDataParallel(model[key])
             
     start_epoch = 0
     iters = 0
@@ -165,9 +166,10 @@ def main(config_path):
                    sr, 
                    model_params.slm.sr).to(device)
 
-    gl = MyDataParallel(gl)
-    dl = MyDataParallel(dl)
-    wl = MyDataParallel(wl)
+    if data_parallel:
+        gl = MyDataParallel(gl)
+        dl = MyDataParallel(dl)
+        wl = MyDataParallel(wl)
     
     sampler = DiffusionSampler(
         model.diffusion.diffusion,
@@ -315,9 +317,13 @@ def main(config_path):
                 num_steps = np.random.randint(3, 5)
                 
                 if model_params.diffusion.dist.estimate_sigma_data:
-                    model.diffusion.module.diffusion.sigma_data = s_trg.std(axis=-1).mean().item() # batch-wise std estimation
-                    running_std.append(model.diffusion.module.diffusion.sigma_data)
-                    
+                    if data_parallel:
+                        model.diffusion.module.diffusion.sigma_data = s_trg.std(axis=-1).mean().item() # batch-wise std estimation
+                        running_std.append(model.diffusion.module.diffusion.sigma_data)
+                    else:
+                        model.diffusion.diffusion.sigma_data = s_trg.std(axis=-1).mean().item() # batch-wise std estimation
+                        running_std.append(model.diffusion.diffusion.sigma_data)
+
                 if multispeaker:
                     s_preds = sampler(noise = torch.randn_like(s_trg).unsqueeze(1).to(device), 
                           embedding=bert_dur,
@@ -333,7 +339,10 @@ def main(config_path):
                           embedding_scale=1,
                              embedding_mask_proba=0.1,
                              num_steps=num_steps).squeeze(1)                    
-                    loss_diff = model.diffusion.module.diffusion(s_trg.unsqueeze(1), embedding=bert_dur).mean() # EDM loss
+                    if data_parallel:
+                        loss_diff = model.diffusion.module.diffusion(s_trg.unsqueeze(1), embedding=bert_dur).mean() # EDM loss
+                    else:
+                        loss_diff = model.diffusion.diffusion(s_trg.unsqueeze(1), embedding=bert_dur).mean() # EDM loss
                     loss_sty = F.l1_loss(s_preds, s_trg.detach()) # style reconstruction loss
             else:
                 loss_sty = 0
