@@ -211,6 +211,7 @@ def main(config_path):
     if load_pretrained:
         model, optimizer, start_epoch, iters = load_checkpoint(model,  optimizer, config['pretrained_model'],
                                     load_only_params=config.get('load_only_params', True))
+        start_epoch += 1
         
     n_down = model.text_aligner.n_down
 
