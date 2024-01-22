@@ -65,7 +65,7 @@ def main(config_path):
     logger.addHandler(file_handler)
 
     
-    batch_size = config.get('batch_size', 10)
+    batch_size = config.get('batch_size_2nd', 10)
 
     epochs = config.get('epochs_2nd', 200)
     save_freq = config.get('save_freq', 2)
