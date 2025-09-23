@@ -1,0 +1,63 @@
+[project]
+name = "styletts2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.11.*"
+dependencies = [
+    "accelerate>=0.26.1",
+    "einops>=0.7.0",
+    "einops-exts>=0.0.4",
+    "librosa>=0.10.1",
+    "munch>=4.0.0",
+    "nltk>=3.8.1",
+    "phonemizer>=3.2.1",
+    "pydub>=0.25.1",
+    "pyyaml>=6.0.1",
+    "soundfile>=0.12.1",
+    "torch==2.1.2",
+    "torchaudio==2.1.2",
+    "tqdm>=4.66.1",
+    "transformers>=4.36.2",
+    "typing>=3.7.4.3",
+    "typing-extensions>=4.9.0",
+    "monotonic-align @ git+https://github.com/resemble-ai/monotonic_align.git#78b985be210a03d08bc3acc01c4df0442105366f"
+]
+
+[tool.uv]
+environments = [
+  "sys_platform == 'linux' and platform_machine == 'x86_64'",
+  "sys_platform == 'darwin'",
+]
+dev-dependencies = [
+    "basedpyright>=1.28.5",
+    "ipykernel>=6.30.1",
+    "ipython>=9.5.0",
+    "matplotlib>=3.10.6",
+    "pandas>=2.3.2",
+    "tensorboard>=2.20.0",
+]
+python-preference = "only-system"
+index-strategy = "unsafe-best-match"
+
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
+  { index = "pytorch-cu121", marker = "sys_platform == 'linux'" },
+]
+torchvision = [
+  { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
+  { index = "pytorch-cu121", marker = "sys_platform == 'linux'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
