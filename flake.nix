@@ -33,6 +33,7 @@
             alejandra
             protobuf
             portaudio
+            espeak-ng
           ]
           ++ (
             if pkgs.stdenv.isLinux
@@ -59,11 +60,12 @@
             export LIBRARY_PATH=${
               pkgs.lib.makeLibraryPath [
                 pkgs.portaudio
+                pkgs.espeak-ng
               ]
             }:$LIBRARY_PATH
           ''
           else ''
-            export DYLD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [pkgs.portaudio]}:$DYLD_LIBRARY_PATH"
+            export DYLD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [pkgs.portaudio pkgs.espeak-ng]}:$DYLD_LIBRARY_PATH"
           '';
       };
     });
