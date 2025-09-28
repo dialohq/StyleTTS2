@@ -34,6 +34,8 @@
             protobuf
             portaudio
             espeak-ng
+            yq-go
+            dyff
           ]
           ++ (
             if pkgs.stdenv.isLinux
