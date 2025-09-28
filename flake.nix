@@ -57,7 +57,11 @@
         shellHook =
           if pkgs.stdenv.isLinux
           then ''
-            export LD_LIBRARY_PATH=$(${nix-gl-host.defaultPackage.${system}}/bin/nixglhost -p):$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=$(${nix-gl-host.defaultPackage.${system}}/bin/nixglhost -p):${
+              pkgs.lib.makeLibraryPath [
+                pkgs.espeak-ng
+              ]
+            }:$LD_LIBRARY_PATH
             # Set LIBRARY_PATH to help the linker find the CUDA static libraries
             export LIBRARY_PATH=${
               pkgs.lib.makeLibraryPath [
