@@ -33,6 +33,7 @@ dev-dependencies = [
     "basedpyright>=1.28.5",
     "ipykernel>=6.30.1",
     "ipython>=9.5.0",
+    "jupyter-server>=2.17.0",
     "matplotlib>=3.10.6",
     "pandas>=2.3.2",
     "tensorboard>=2.20.0",
