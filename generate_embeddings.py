@@ -10,7 +10,7 @@ import re
 def init(config_path):
     config = yaml.safe_load(open(config_path))
     
-    device = 'cpu'
+    device = 'cuda'
     
     
     ASR_config = config.get('ASR_config', False)
@@ -30,6 +30,27 @@ def init(config_path):
     model = build_model(model_params, text_aligner, pitch_extractor, plbert)
     _ = [model[key].eval() for key in model]
     _ = [model[key].to(device) for key in model]
+
+    params_whole = torch.load(".data/epoch_2nd_00049.pth", map_location='cuda')
+
+    params = params_whole['net']
+
+    for key in model:
+        if key in params:
+            print('%s loaded' % key)
+            try:
+                model[key].load_state_dict(params[key])
+            except:
+                from collections import OrderedDict
+                state_dict = params[key]
+                new_state_dict = OrderedDict()
+                for k, v in state_dict.items():
+                    name = k[7:] # remove `module.`
+                    new_state_dict[name] = v
+                # load params
+                model[key].load_state_dict(new_state_dict, strict=False)
+    #             except:
+    #                 _load(params[key], model[key])
     return model
 
 to_mel = torchaudio.transforms.MelSpectrogram(
@@ -42,14 +63,14 @@ def preprocess(wave):
     mel_tensor = (torch.log(1e-5 + mel_tensor.unsqueeze(0)) - mean) / std
     return mel_tensor
 
-device = 'cpu'
+device = 'cuda'
 
 def compute_style(model, path):
     wave, sr = librosa.load(path, sr=24000)
     audio, index = librosa.effects.trim(wave, top_db=30)
     if sr != 24000:
         audio = librosa.resample(audio, sr, 24000)
-    mel_tensor = preprocess(audio).to(device)
+    mel_tensor = preprocess(audio).to('cuda')
 
     with torch.no_grad():
         ref_s = model.style_encoder(mel_tensor.unsqueeze(1))
